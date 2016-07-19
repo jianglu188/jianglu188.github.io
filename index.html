@@ -314,8 +314,10 @@
         RxBus rxBus = sInstance;
         if (sInstance == null) {
             synchronized (RxBus.class) {
+                rxBus = sInstance;
                 if (sInstance == null) {
-                    sInstance = new RxBus();
+                    rxBus = new RxBus();
+                    sInstance = rxBus;
                 }
             }
         }
