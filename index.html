@@ -320,40 +320,8 @@
           
             <p>事件总线可以使Android中各组件之间的通信变得简单，最重要的是可以<strong>解耦</strong>！<br>目前大多数开发者使用EventBus或者Otto作为事件总线通信库，对于RxJava使用者来说，RxJava也可以轻松实现事件总线，因为它们都依据于观察者模式。</p>
 <p>不多说，上代码</p>
-<pre><code>public class RxBus {
-    private static volatile RxBus sInstance;
-
-    private final Subject&lt;Object, Object&gt; subject;
-
-    private RxBus() {
-      subject = new SerializedSubject&lt;&gt;(PublishSubject.create());
-    }
-
-    private static RxBus getInstance() {
-        RxBus rxBus = sInstance;
-        if (sInstance == null) {
-            synchronized (RxBus.class) {
-                rxBus = sInstance;
-                if (sInstance == null) {
-                    rxBus = new RxBus();
-                    sInstance = rxBus;
-                }
-            }
-        }
-        return rxBus;
-    }
-
-    //发送一个新的事件
-    public void post (Object o) {
-        subject.onNext(o);
-    }
-
-    //返回指定类型的Observable
-    public &lt;T&gt; Observable&lt;T&gt; toObservable (Class&lt;T&gt; eventType) {
-        return subject.ofType(eventType);
-    }
-}
-</code></pre><p>注：<br>1、<a href="http://reactivex.io/documentation/subject.html" target="_blank" rel="external">Subject</a>同时充当了Observer和Observable的角色，Subject是非线程安全的，要避免该问题，需要将Subject转换为一个 SerializedSubject ，上述RxBus类中把线程非安全的PublishSubject包装成线程安全的Subject。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RxBus</span> </span>&#123;</div><div class="line"> <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> RxBus sInstance;</div><div class="line">	</div><div class="line"> <span class="keyword">private</span> <span class="keyword">final</span> Subject&lt;Object, Object&gt; subject;</div><div class="line">	</div><div class="line"> <span class="function"><span class="keyword">private</span> <span class="title">RxBus</span><span class="params">()</span> </span>&#123;</div><div class="line">   subject = <span class="keyword">new</span> SerializedSubject&lt;&gt;(PublishSubject.create());</div><div class="line"> &#125;</div><div class="line">	</div><div class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> RxBus <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">        RxBus rxBus = sInstance;</div><div class="line">     <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</div><div class="line">         <span class="keyword">synchronized</span> (RxBus.class) &#123;</div><div class="line">                rxBus = sInstance;</div><div class="line">             <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</div><div class="line">                 rxBus = <span class="keyword">new</span> RxBus();</div><div class="line">		sInstance = rxBus;</div><div class="line">             &#125;</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line">     <span class="keyword">return</span> rxBus;</div><div class="line"> &#125;</div><div class="line"> </div><div class="line">    <span class="comment">//发送一个新的事件</span></div><div class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">post</span> <span class="params">(Object o)</span> </span>&#123;</div><div class="line">     subject.onNext(o);</div><div class="line"> &#125;</div><div class="line">	</div><div class="line">    <span class="comment">//返回指定类型的Observable</span></div><div class="line"> <span class="keyword">public</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">toObservable</span> <span class="params">(Class&lt;T&gt; eventType)</span> </span>&#123;</div><div class="line">     <span class="keyword">return</span> subject.ofType(eventType);</div><div class="line"> &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>注：<br>1、<a href="http://reactivex.io/documentation/subject.html" target="_blank" rel="external">Subject</a>同时充当了Observer和Observable的角色，Subject是非线程安全的，要避免该问题，需要将Subject转换为一个 SerializedSubject ，上述RxBus类中把线程非安全的PublishSubject包装成线程安全的Subject。</p>
 <p>2、PublishSubject只会把在订阅发生的时间点之后来自原始Observable的数据发射给观察者。</p>
 <p>3、ofType操作符只发射指定类型的数据</p>
 
